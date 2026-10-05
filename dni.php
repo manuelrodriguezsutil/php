@@ -43,3 +43,17 @@ echo "{$dni_numeros}{$letra}\n";
 // $letra = substr($cadena_letras, $indice, 1);
 
 // echo "{$dni}{$letra}\n";
+
+
+// define() --> definir constantes
+// <?php
+
+// $dni = '78551004';
+
+// $resto = $dni % 23;
+// #01234567..
+// define("CALCULO_LETRA_DNI","TRWAGMYFPDXBNJZSQVHLCKE");
+
+// $letra_nif = CALCULO_LETRA_DNI[$resto];
+
+// echo "EL NIF asociado al dni {$dni} es {$dni}{$letra_nif}";
