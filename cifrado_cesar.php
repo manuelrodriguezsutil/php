@@ -11,34 +11,52 @@
 // 4. Descifre el resultado y verifique que recupera el texto normalizado original.
 // 5. Muestre: texto original, texto normalizado, texto cifrado, texto descifrado y si la verificación es correcta.
 
+// --------------------------------------------------------------------
+
 $texto    = "¡Programar en PHP es divertidísimo, Ñandú!";
 $k        = 7;
 $alfabeto = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
 
-// $texto_normalizado = strtr($texto, $caracteres_especiales, "AEIOUUaeiouu");
 $acentos     = "ÁÉÍÓÚÜáéíóúü";
 $sin_acentos = "AEIOUUaeiouu";
 
-$texto_normalizado = $texto;
-for ($i = 0; $i < strlen($sin_acentos); $i++) {
-    $texto_normalizado = str_replace(substr($acentos, $i * 2, 2), substr($sin_acentos, $i, 1), $texto_normalizado);
-}
+// Normalizar acentos
+$texto_normalizado = strtr($texto, $acentos, $sin_acentos);
 
-$texto_crifrado = '';
+$texto_cifrado = '';
+for ($i = 0; $i < mb_strlen($texto_normalizado, 'UTF-8'); $i++) {
 
-for ($i = 0; $i < strlen($texto_normalizado); $i++) {
-    $caracter = substr($texto_normalizado, $i, 1);
-
-    if (str_contains("¿?¡!,.;: ", $caracter)) {
-        $texto_crifrado .= $caracter;
+    $caracter = mb_substr($texto_normalizado, $i, 1, 'UTF-8');
+    if (mb_strpos("¿?¡!,.;: ", $caracter, 0, 'UTF-8') !== false) {
+        $texto_cifrado .= $caracter;
         continue;
     }
 
-    $caracter        = strtoupper($caracter);
-    $posicion        = (strpos($alfabeto, $caracter) + $k) % strlen($alfabeto);
-    $texto_crifrado .= $alfabeto[$posicion];
+    $caracter = mb_strtoupper($caracter, 'UTF-8');
+
+    $posicionOriginal = mb_strpos($alfabeto, $caracter, 0, 'UTF-8');
+    $posicionNueva = ($posicionOriginal + $k) % mb_strlen($alfabeto, 'UTF-8');
+
+    $texto_cifrado .= mb_substr($alfabeto, $posicionNueva, 1, 'UTF-8');
+}
+
+$texto_descifrado = '';
+for ($i = 0; $i < mb_strlen($texto_cifrado, 'UTF-8'); $i++) {
+
+    $caracter = mb_substr($texto_cifrado, $i, 1, 'UTF-8');
+    if (mb_strpos("¿?¡!,.;: ", $caracter, 0, 'UTF-8') !== false) {
+        $texto_descifrado .= $caracter;
+        continue;
+    }
+
+    $posicionOriginal = mb_strpos($alfabeto, $caracter, 0, 'UTF-8');
+
+    $posicionNueva = ($posicionOriginal - $k + mb_strlen($alfabeto, 'UTF-8')) % mb_strlen($alfabeto, 'UTF-8');
+
+    $texto_descifrado .= mb_substr($alfabeto, $posicionNueva, 1, 'UTF-8');
 }
 
 echo "Original: {$texto}\n";
 echo "Normalizado: {$texto_normalizado}\n";
-echo "Cifrado (k=7): {$texto_crifrado}\n";
+echo "Cifrado (k={$k}): {$texto_cifrado}\n";
+echo "Descifrado: {$texto_descifrado}\n";
