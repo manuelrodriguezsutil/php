@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+function imprimirUso(): void
+{
+    echo "Uso: php toolbox.php <comando> [args]\n";
+    echo "Comandos: saludar, sumar, sumar-todos, es-primo, palabra-mas-larga, estadisticas\n";
+}
+
 function saludar(string $nombre)
 {
     return "Hola, " . $nombre;
@@ -32,18 +38,31 @@ function esPrimo(int $num): bool
     return TRUE;
 }
 
-function palabraMasLarga(array $palabras): string
+function palabraMasLarga(string $palabras): string
 {
     $masLarga = '';
+    $palabra_actual = '';
 
-    for ($i = 0; $i < count($palabras); $i++) {
-        if (str_contains("¡!¿?,.;: ", $palabras[$i]))
+    for ($i = 0; $i < strlen($palabras); $i++) {
+        $caracter = $palabras[$i];
+
+        if (str_contains("¡!¿?,.;:", $caracter)) {
             continue;
-
-        if (strlen($palabras[$i]) > strlen($masLarga)) {
-            $masLarga = $palabras[$i];
         }
+
+        if (str_contains(" ", $caracter)) {
+            if (strlen($palabra_actual) > strlen($masLarga)) {
+                $masLarga = $palabra_actual;
+            }
+            $palabra_actual = "";
+            continue;
+        }
+
+        $palabra_actual .= $caracter;
     }
+
+    if (strlen($palabra_actual) > strlen($masLarga))
+        $masLarga = $palabra_actual;
 
     return $masLarga;
 }
@@ -64,19 +83,24 @@ function estadisticas(array $nums): array
     $maximo = max($nums);
     $media = media($nums);
 
-    return ['min' => $minimo, 'max' => $maximo, 'media' => $media];
+    return ['min' => $minimo, 'max' => $maximo, 'media' => round($media, 2)];
 }
 
-function parsearNumeros(array $args): array
+
+function leerArgsNumericos(array $args): bool
+{
+    foreach ($args as $arg) {
+        if (!is_numeric($arg))
+            return false;
+    }
+
+    return true;
+}
+
+function convertirNumeros(array $args): array
 {
     $numeros = [];
-
     foreach ($args as $arg) {
-        if (!is_numeric($arg)) {
-            echo "Error: '$arg' no es un número.\n";
-            exit;
-        }
-
         $numeros[] = (int)$arg;
     }
 
@@ -84,29 +108,75 @@ function parsearNumeros(array $args): array
 }
 
 if ($argc < 2) {
-    echo "Uso: php toolbox.php <comando> [args]\n";
-    echo "Comandos: saludar, sumar, sumar-todos, es-primo, palabra-mas-larga, estadisticas\n";
+    imprimirUso();
+    exit(1);
 }
 
-if ($argv[1] === "saludar") {
-    echo saludar($argv[2]) . "\n";
-} else if ($argv[1] === "sumar") {
-    $sumar = fn($a, $b) => $a + $b;
+switch ($argv[1]) {
+    case "saludar":
+        echo saludar($argv[2]) . "\n";
 
-    $numeros = parsearNumeros(array_splice($argv, 2));
-    echo $sumar($numeros[0], $numeros[1]) . "\n";
-} else if ($argv[1] === "sumar-todos") {
-    $numeros = parsearNumeros(array_splice($argv, 2));
-    echo sumarTodos(...$numeros) . "\n";
-} else if ($argv[1] === "es-primo") {
-    echo esPrimo((int)$argv[2]) . "\n";
-} else if ($argv[1] === "palabra-mas-larga") {
-    echo palabraMasLarga(array_splice($argv, 2)) . "\n";
-} else if ($argv[1] === "estadisticas") {
-    $numeros = parsearNumeros(array_splice($argv, 2));
-    $estadisticas = estadisticas($numeros);
+        break;
+    case "sumar":
+        $sumar = fn($a, $b) => $a + $b;
 
-    echo "Mínimo: " . $estadisticas['min'] . "\n";
-    echo "Máximo: " . $estadisticas['max'] . "\n";
-    echo "Media: " . $estadisticas['media'] . "\n";
+        $argumentos = array_splice($argv, 2);
+
+        if (!leerArgsNumericos($argumentos)) {
+            echo "Error: los argumentos no son numéricos.\n";
+            exit(1);
+        }
+
+        $numeros = convertirNumeros($argumentos);
+        echo $sumar($numeros[0], $numeros[1]) . "\n";
+
+        break;
+    case "sumar-todos":
+        $argumentos = array_splice($argv, 2);
+
+        if (!leerArgsNumericos($argumentos)) {
+            echo "Error: los argumentos no son numéricos.\n";
+            exit(1);
+        }
+
+        $numeros = convertirNumeros($argumentos);
+        echo sumarTodos(...$numeros) . "\n";
+
+        break;
+    case "es-primo":
+        $argumentos = array_splice($argv, 2);
+
+        if (count($argumentos) < 1 || !leerArgsNumericos($argumentos)) {
+            echo "Error: se necesita un número.\n";
+            exit(1);
+        }
+
+        $numeros = convertirNumeros($argumentos);
+        echo (esPrimo($numeros[0]) ? "true" : "false") . "\n";
+
+        break;
+    case "palabra-mas-larga":
+        echo palabraMasLarga($argv[2]) . "\n";
+
+        break;
+    case "estadisticas":
+        $argumentos = array_splice($argv, 2);
+
+        if (!leerArgsNumericos($argumentos)) {
+            echo "Error: los argumentos no son numéricos.\n";
+            exit(1);
+        }
+
+        $numeros = convertirNumeros($argumentos);
+
+        $estadisticas = estadisticas($numeros);
+        echo "Mínimo: " . $estadisticas['min'] . "\n";
+        echo "Máximo: " . $estadisticas['max'] . "\n";
+        echo "Media: " . $estadisticas['media'] . "\n";
+
+        break;
+    default:
+        echo "Error: no existe ese comando.\n\n";
+        imprimirUso();
+        exit(1);
 }
