@@ -41,6 +41,13 @@ $campos_vacios = verificarCampos($nombre, $edad, $email);
         integrity="sha384-1a/pXj49ZQ1aHEmrJ+gMw1otqoVsYwlEnlD8mIfY2TV03r20Y0CN7uqx1tQogjPL"
         crossorigin="anonymous"></script>
 
+    <style>
+        .container {
+            padding: 50px;
+        }
+    </style>
+
+
 </head>
 
 <body>
