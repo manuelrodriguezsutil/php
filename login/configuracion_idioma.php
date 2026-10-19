@@ -1,9 +1,12 @@
 <?php
 session_start();
 
+$configurado = false;
+
 if (isset($_POST['idioma'])) {
     $idioma  = $_POST['idioma'];
     $_SESSION['idioma'] = $idioma;
+    $configurado = true;
 }
 
 ?>
@@ -30,7 +33,7 @@ if (isset($_POST['idioma'])) {
 
 <body>
     <div class="container">
-        <form method="POST" action="/login/configuracion_idioma.php">
+        <form method="POST" action="./configuracion_idioma.php">
             <p>Elige tu idioma: </p>
             <div class="form-field">
                 <input class="radio" name="idioma" type="radio" id="es" value="es" />
@@ -52,7 +55,10 @@ if (isset($_POST['idioma'])) {
 
         <br />
 
-        <p>Volver a la página de <a href="./bienvenida.php">bienvenida</a></p>
+        <?php
+        if ($configurado)
+            echo "<p>Volver a la página de <a href='./bienvenida.php'>bienvenida</a></p>";
+        ?>
     </div>
 
 </body>

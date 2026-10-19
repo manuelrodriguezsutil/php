@@ -1,7 +1,4 @@
 <?php
-// En esta página, muestra el nombre del usuario utilizando la variable de sesión $_SESSION['nombre_usuario'].
-// Si el usuario no ha iniciado sesión, redirígelo de vuelta a la página de inicio de sesión.
-// Añade un enlace que permita al usuario ir a la página de configuración de idioma.
 session_start();
 
 if (empty($_SESSION['usuario'])) {
@@ -14,13 +11,13 @@ if (empty($_SESSION['idioma'])) {
 } else {
     switch ($_SESSION['idioma']) {
         case 'es':
-            $mensaje = "Bienvenido, " . $_SESSION['usuario'] . "</p>";
+            $mensaje = "<h1>Bienvenido, " . $_SESSION['usuario'] . "</h1>";
             break;
         case 'en':
-            $mensaje = "Welcome, " . $_SESSION['usuario'] . "</p>";
+            $mensaje = "<h1>Welcome, " . $_SESSION['usuario'] . "</h1>";
             break;
         case 'fr':
-            $mensaje = "Bienvenue, " . $_SESSION['usuario'] . "</p>";
+            $mensaje = "<h1>Bienvenue, " . $_SESSION['usuario'] . "</h1>";
             break;
         default:
             $mensaje = "<p>Ha ocurrido un error</p>";
@@ -54,6 +51,9 @@ if (empty($_SESSION['idioma'])) {
         <?php
         if (!empty($mensaje))
             echo $mensaje;
+        if (!empty($_SESSION['idioma']))
+            echo "<br/>";
+            echo "<button type='button' class='btn btn-primary'><a href='./logout.php'>Cerrar sesión</a></button>"
         ?>
     </div>
 

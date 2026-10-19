@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if ($_POST['paso'] == 'paso') {
+if (isset($_POST["nombre"])) {
     $nombre = $_POST["nombre"] ?? "";
     $_SESSION['usuario'] = $nombre;
 }
@@ -36,7 +36,9 @@ if (!empty($_SESSION['usuario'])) {
 <body>
 
     <div class="container">
-        <form action="/login/login.php" method="POST">
+        <h1>Inicia sesión</h1>
+        <br/>
+        <form action="./login.php" method="POST">
             <input type="hidden" name="paso" value="paso">
 
             <label for="nombre" class="form-label">Nombre</label>
