@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['option'])) {
                 <a class="nav-link <?= $categoria === 'popular' ? 'active' : '' ?>" href="?categoria=popular">Popular</a>
                 <a class="nav-link <?= $categoria === 'top_rated' ? 'active' : '' ?>" href="?categoria=top_rated">Mejor valoradas</a>
                 <a class="nav-link <?= $categoria === 'now_playing' ? 'active' : '' ?>" href="?categoria=now_playing">En cartelera</a>
-                <a class="nav-link <?= $categoria === 'upcoming' ? 'active' : '' ?>" href="?upcoming">Próximos estrenos</a>
+                <a class="nav-link <?= $categoria === 'upcoming' ? 'active' : '' ?>" href="?categoria=upcoming">Próximos estrenos</a>
             </nav>
         </div>
 
