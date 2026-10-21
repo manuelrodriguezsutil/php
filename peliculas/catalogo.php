@@ -83,25 +83,35 @@ function imprimirPeliculas(array $peliculas, array $generos)
 
     foreach ($peliculas as $indice => $pelicula) {
         if ($indice % 3 == 0)
-            echo "<div class='grid text-center grid-cols-3'>";
+            echo "<div class='grid grid-cols-3 gap-4 mb-4'>";
 
         $anio = substr($pelicula['release_date'], 0, 4);
 
         $generos_pelicula = obtenerGenerosPelicula($pelicula, $generos);
-        $nombre_generos = implode(", ", $generos_pelicula);
+        $nombre_generos = htmlspecialchars(implode(", ", $generos_pelicula), ENT_QUOTES, 'UTF-8');
 
         $poster = "https://image.tmdb.org/t/p/w500" . $pelicula['poster_path'];
         $titulo = htmlspecialchars($pelicula['title'], ENT_QUOTES, 'UTF-8');
-        $descripcion = $pelicula['overview'];
+        $descripcion = htmlspecialchars($pelicula['overview'], ENT_QUOTES, 'UTF-8');
         $rating = $pelicula['vote_average'];
 
-        echo "<div class='col-md-4'>";
-        echo "<img src='{$poster}' class='img-thumbnail' alt='{$titulo}'>";
-        echo "<h2 class='titulo-pelicula'>{$titulo}</h2>";
-        echo "<p class='rating'>{$rating} / 10</p>";
-        echo "<p>{$anio}</p>";
-        echo "<p>{$nombre_generos}</p>";
-        echo "<p>{$descripcion}</p>";
+        echo "<div>";
+
+        echo "<img src='{$poster}' class='poster-pelicula w-100 rounded mb-3' alt='{$titulo}'>";
+        echo "<h2 class='h5'>{$titulo}</h2>";
+
+        echo "<div class='d-flex justify-content-between align-items-center mb-2'>";
+        echo "<span class='text-body-secondary'>{$anio}</span>";
+        echo "<span class='badge theme-primary'>{$rating} / 10</span>";
+        echo "</div>";
+
+        echo "<p class='small text-body-secondary mb-2'>{$nombre_generos}</p>";
+        echo "<button class='btn-outline theme-primary' type='button' data-bs-toggle='collapse' data-bs-target='#sinopsis-{$indice}' aria-expanded='false' aria-controls='sinopsis-{$indice}'>Ver sinopsis</button>";
+
+        echo "<div class='collapse' id='sinopsis-{$indice}'>";
+        echo "<p class='mt-3 mb-0'>{$descripcion}</p>";
+        echo "</div>";
+
         echo "</div>";
 
         if ($indice % 3 == 2)
@@ -163,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['option'])) {
     <div class="container">
         <div class="d-flex">
             <h1 class="p-2 flex-grow-1">Catálogo de películas</h1>
+
             <nav class="nav">
                 <a class="nav-link <?= $categoria === 'popular' ? 'active' : '' ?>" href="?categoria=popular">Popular</a>
                 <a class="nav-link <?= $categoria === 'top_rated' ? 'active' : '' ?>" href="?categoria=top_rated">Mejor valoradas</a>
@@ -187,7 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['option'])) {
             <input class="btn-solid theme-primary" type="submit" value="Buscar" />
         </form>
 
-        <div class="text-center">
+        <div class="mt-4 text-start">
             <?php
             if (!empty($peliculas_seleccionadas))
                 imprimirPeliculas($peliculas_seleccionadas, $generos);

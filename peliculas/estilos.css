@@ -2,8 +2,7 @@ h1 {
     font-weight: bold;
 }
 
-.img-thumbnail {
-    height: 500px;
-    margin-bottom: 20px;
-    margin-top: 20px;
+.poster-pelicula {
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
 }
