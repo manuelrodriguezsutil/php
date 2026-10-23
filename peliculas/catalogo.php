@@ -54,16 +54,6 @@ function obtenerGenerosAPI(string $url): array
     return $datos['genres'];
 }
 
-function obtenerNombreGeneroId(string $nombreGenero, array $generos): string
-{
-    foreach ($generos as $genero) {
-        if ($nombreGenero === $genero['name'])
-            return $genero['id'];
-    }
-
-    return "";
-}
-
 function obtenerGenerosPelicula(array $pelicula, array $generos): array
 {
     $generos_pelicula = [];
@@ -106,7 +96,7 @@ function imprimirPeliculas(array $peliculas, array $generos)
         echo "</div>";
 
         echo "<p class='small text-body-secondary mb-2'>{$nombre_generos}</p>";
-        echo "<button class='btn-outline theme-primary' type='button' data-bs-toggle='collapse' data-bs-target='#sinopsis-{$indice}' aria-expanded='false' aria-controls='sinopsis-{$indice}'>Ver sinopsis</button>";
+        echo "<button class='btn-outline theme-primary' type='button' data-bs-toggle='collapse' data-bs-target='#sinopsis-{$indice}' aria-expanded='false' aria-controls='sinopsis-{$indice}'>Ver descripción</button>";
 
         echo "<div class='collapse' id='sinopsis-{$indice}'>";
         echo "<p class='mt-3 mb-0'>{$descripcion}</p>";
@@ -125,6 +115,7 @@ function imprimirPeliculas(array $peliculas, array $generos)
 $apiKey = '3b13fd040f83ac46619f11ccfacb511b';
 
 $categorias = ['popular', 'top_rated', 'now_playing', 'upcoming'];
+
 $categoria = $_GET['categoria'] ?? 'popular';
 if (!in_array($categoria, $categorias))
     $categoria = 'popular';
@@ -142,8 +133,8 @@ $generos = obtenerGenerosAPI($url_generos);
 
 $peliculas_seleccionadas = $peliculas;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['option'])) {
-    $genero_seleccionado = $_GET['option'];
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['genero'])) {
+    $genero_seleccionado = $_GET['genero'];
 
     if ($genero_seleccionado !== '')
         $peliculas_seleccionadas = array_filter($peliculas, fn($p) => in_array($genero_seleccionado, $p['genre_ids']));
@@ -172,25 +163,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['option'])) {
 <body>
     <div class="container">
         <div class="d-flex">
-            <h1 class="p-2 flex-grow-1">Catálogo de películas</h1>
+            <h1 class="p-2 flex-grow-1"> Catálogo de películas </h1>
 
             <nav class="nav">
-                <a class="nav-link <?= $categoria === 'popular' ? 'active' : '' ?>" href="?categoria=popular">Popular</a>
-                <a class="nav-link <?= $categoria === 'top_rated' ? 'active' : '' ?>" href="?categoria=top_rated">Mejor valoradas</a>
-                <a class="nav-link <?= $categoria === 'now_playing' ? 'active' : '' ?>" href="?categoria=now_playing">En cartelera</a>
-                <a class="nav-link <?= $categoria === 'upcoming' ? 'active' : '' ?>" href="?categoria=upcoming">Próximos estrenos</a>
+                <a class="nav-link <?= $categoria === 'popular' ? 'active' : '' ?>" href="?categoria=popular&genero=<?= urlencode($genero_seleccionado) ?>">Popular</a>
+                <a class="nav-link <?= $categoria === 'top_rated' ? 'active' : '' ?>" href="?categoria=top_rated&genero=<?= urlencode($genero_seleccionado) ?>">Mejor valoradas</a>
+                <a class="nav-link <?= $categoria === 'now_playing' ? 'active' : '' ?>" href="?categoria=now_playing&genero=<?= urlencode($genero_seleccionado) ?>">En cartelera</a>
+                <a class="nav-link <?= $categoria === 'upcoming' ? 'active' : '' ?>" href="?categoria=upcoming&genero=<?= urlencode($genero_seleccionado) ?>">Próximos estrenos</a>
             </nav>
         </div>
 
         <br />
 
         <form method="get" action="./catalogo.php" class="d-flex gap-2">
-            <select name="option" class="form-control combobox-toggle">
-                <option value="">Buscar por género...</option>
-                <option value="">Todos</option>
+            <input type="hidden" name="categoria" value="<?= $categoria ?>" />
+            <select name="genero" class="form-control combobox-toggle">
+                "<option value='' disabled <?= $genero_seleccionado === '' && !isset($_GET['genero']) ? 'selected' : '' ?>>
+                    Buscar por género...
+                </option>";
+                "<option value='' <?= $genero_seleccionado === '' && isset($_GET['genero']) ? 'selected' : '' ?>>
+                    Todos
+                </option>";
+
                 <?php
                 foreach ($generos as $genero) {
-                    echo "<option value='{$genero["id"]}'>{$genero["name"]}</option>";
+                    $seleccionado = $genero_seleccionado == $genero['id'] ? 'selected' : '';
+                    echo "<option value='{$genero["id"]}' $seleccionado >{$genero["name"]}</option>";
                 }
                 ?>
             </select>

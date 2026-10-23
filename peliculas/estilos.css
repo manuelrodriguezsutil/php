@@ -6,3 +6,7 @@ h1 {
     aspect-ratio: 2 / 3;
     object-fit: cover;
 }
+
+.container {
+    padding: 50px;
+}
