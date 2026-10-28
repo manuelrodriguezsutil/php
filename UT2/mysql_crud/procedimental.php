@@ -21,9 +21,14 @@ $emails  = ["carlos@gmail.com", "maria@gmail.com", "pedro@gmail.com", "lucia@gma
 $edades  = [25, 30, 22, 28, 35];
 
 for ($i = 0; $i < count($nombres); $i++) {
-    $sql = "INSERT INTO usuarios (nombre, email, edad) VALUES ('{$nombres[$i]}', '{$emails[$i]}', '{$edades[$i]}')";
+    $sql = "SELECT * FROM usuarios WHERE email = '{$emails[$i]}'";
+    $resultado = mysqli_query($conexion, $sql);
 
-    mysqli_query($conexion, $sql);
+    if (mysqli_num_rows($resultado) == 0) {
+        $sql = "INSERT INTO usuarios (nombre, email, edad) VALUES ('{$nombres[$i]}', '{$emails[$i]}', '{$edades[$i]}')";
+
+        mysqli_query($conexion, $sql);
+    }
 }
 
 $sql = "SELECT * FROM usuarios";
@@ -37,6 +42,9 @@ $resultado = mysqli_query($conexion, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de usuarios</title>
+
+    <style>
+    </style>
 </head>
 
 <body>
