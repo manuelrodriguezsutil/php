@@ -1,5 +1,4 @@
 <?php
-// Conexión a la base de datos
 $servidor   = "localhost";
 $usuario    = "manuel";
 $contraseña = "Manuel123!";
@@ -51,7 +50,7 @@ $resultado = mysqli_query($conexion, $sql);
 
     <div>
 
-        <h1>Gestión de usuarios</h1>
+        <h1>Gestión de usuarios: Procedimental</h1>
 
         <h2>Lista de usuarios</h2>
 
